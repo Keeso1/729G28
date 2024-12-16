@@ -1,0 +1,33 @@
+id,name,coach,owner,start
+51,Kansas City Chiefs,10,Mark Donovan,1940-01-01T00:00:00+02:00
+66,New England Patriots,14,Jonathan Kraft,1944-01-01T00:00:00+02:00
+45,Houston Texans,19,Jamey Rootes,1947-01-01T00:00:00+02:00
+5,Arizona Cardinals,48,Michael Bidwill,1960-01-01T00:00:00+02:00
+75,Philadelphia Eagles,61,Don_Smolenski,1950-01-01T00:00:00+02:00
+48,Indianapolis Colts,67,Sahand Sadjadee,1940-01-01T00:00:00+02:00
+73,Oakland Raiders,321,Sahand Sadjadee,1942-01-01T00:00:00+02:00
+12,Buffalo Bills,99,Russ Brandon,1949-01-01T00:00:00+02:00
+49,Jacksonville Jaguars,130,Mark Lamping,1943-01-01T00:00:00+02:00
+32,Dallas Cowboys,139,Jerry Jones,1942-01-01T00:00:00+02:00
+36,Detroit Lions,152,Tom Lewand,1949-01-01T00:00:00+02:00
+57,Miami Dolphins,171, David Lean,1939-01-01T00:00:00+02:00
+34,Denver Broncos,178,Joe Ellis,1940-01-01T00:00:00+02:00
+8,Baltimore Ravens,180,Dick Cass,1940-01-01T00:00:00+02:00
+90,Tampa Bay Buccaneers,214,Malcolm Glazer,1948-01-01T00:00:00+02:00
+16,Chicago Bears,216,Ted Phillips,1963-01-01T00:00:00+02:00
+21,Cincinnati Bengals,220,Mike Brown,1958-01-01T00:00:00+02:00
+40,Green Bay Packers,231,Mark Murphy,1949-01-01T00:00:00+02:00
+22,Cleveland Browns,236,Alec Scheiner,1927-01-01T00:00:00+02:00
+7,Atlanta Falcons,239,Rich McKay,1933-01-01T00:00:00+02:00
+77,Pittsburgh Steelers,241,Art Rooney II,1951-01-01T00:00:00+02:00
+60,Minnesota Vikings,246,Mark Wilf,1940-01-01T00:00:00+02:00
+84,Seattle Seahawks,260,Mickey Connoway,1947-01-01T00:00:00+02:00
+68,New Orleans Saints,295,NULL,1942-01-01T00:00:00+02:00
+69,New York Giants,315,John Mara,1946-01-01T00:00:00+02:00
+14,Carolina Panthers,NULL,Sahand Sadjadee,1964-01-01T00:00:00+02:00
+70,New York Jets,NULL,Neil Glat,1945-01-01T00:00:00+02:00
+81,San Diego Chargers,NULL,Dean Spanos,1951-01-01T00:00:00+02:00
+83,San Francisco 49ers,NULL,Paraag_Marathe,1930-01-01T00:00:00+02:00
+88,St. Louis Rams,NULL,Jack Slask,1931-01-01T00:00:00+02:00
+92,Tennessee Titans,NULL,Leo Santiski,1949-01-01T00:00:00+02:00
+93,Washington Redskins,NULL,John Ford,1960-01-01T00:00:00+02:00

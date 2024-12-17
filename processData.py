@@ -191,7 +191,8 @@ def insert_teamPlayers():
           debute = False
           present = False
           previous = True
-
+          if team_name == debut_team:  # If this is the debut team
+                debute = True
           # Insert into the teamPlayer table
           cur.execute("""
               INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous)

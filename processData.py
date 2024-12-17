@@ -157,29 +157,23 @@ def insert_teamPlayers():
       checkIfNoneAndStrip(player_row)
       player_id = int(player_row["ID"])
 
-      current_teams = player_row["team"].split(',')  # Teams the player is currently in (present)
-      former_teams = player_row["formerTeam"].split(',')  # Former teams (previous)
-      debut_team = player_row["debutTeam"]  # Debut team
+      current_teams = player_row["team"].split(',')  # TODO What if it isn't multivalued? or None
+      former_teams = player_row["formerTeam"].split(',')  
+      debut_team = player_row["debutTeam"]  
       
-      # Insert into teamPlayer table for present teams
       for team_name in current_teams:
         cur.execute("SELECT ID FROM team WHERE fullName = %s", (team_name,))
         team_result = cur.fetchone()
         if team_result:
             team_id = team_result[0]
 
-            # Insert for the present team
             debute = False
             present = True
             previous = False
-            if team_name == debut_team:  # If this is the debut team
+            if team_name == debut_team:
                 debute = True
 
-            # Insert into the teamPlayer table
-            cur.execute("""
-                INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (team_id, player_id, debute, present, previous))
+            cur.execute("INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (%s, %s, %s, %s, %s)", (team_id, player_id, debute, present, previous))
 
       for team_name in former_teams:
         cur.execute("SELECT ID FROM team WHERE fullName = %s", (team_name,))
@@ -194,10 +188,7 @@ def insert_teamPlayers():
           if team_name == debut_team:  # If this is the debut team
                 debute = True
           # Insert into the teamPlayer table
-          cur.execute("""
-              INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous)
-              VALUES (%s, %s, %s, %s, %s)
-          """, (team_id, player_id, debute, present, previous))
+          cur.execute("INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (%s, %s, %s, %s, %s)", (team_id, player_id, debute, present, previous))
 
 
 if __name__ == "__main__":

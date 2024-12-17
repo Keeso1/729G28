@@ -154,7 +154,7 @@ def insert_teamPlayers():
     players = csv.DictReader(csvPlayers, delimiter = ',')
 
     for player_row in players:
-      checkIfNoneAndStrip(row)
+      checkIfNoneAndStrip(player_row)
       player_id = int(player_row["ID"])
 
       current_teams = player_row["team"].split(',')  # Teams the player is currently in (present)

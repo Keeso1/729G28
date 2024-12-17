@@ -31,8 +31,40 @@ def fix_date(date):
 
     return newdate.date()
 
+def fix_datatype(input):
+  if input == None:
+    return
+  if "-" in input:
+    output = input.split("-")
+    output = int(output[0])
+    return output
+  else:
+    return float(input)
+  
+def insert_multivalued(id, dictitem, tablename,value_tuple):
+  if dictitem != None and "{" in dictitem:
+        itemlist = dictitem.replace(dictitem[0], "")
+        itemlist = itemlist.replace(dictitem[-1], "")
+        itemlist = itemlist.split("|")
+
+        get_valuelen = value_tuple.split(",")
+        placeholders = ', '.join(['%s'] * len(get_valuelen))
+        itemquery = f"INSERT INTO {tablename} {value_tuple} VALUES ({placeholders})"
+
+        for item in itemlist:
+          item = item.strip()
+          itemval = (id,item)
+          cur.execute(itemquery, itemval)
+          
+def checkIfNoneAndStrip(row):
+  for key, value in row.items():
+    row[key] = row[key].strip()
+    if value == "NULL":
+      row[key] = None
+
+
 team_IDs = []
-playerTeam_IDs = []
+teamName_and_IDs = []
 
 def insert_coaches():
   with open('AmericanFootballCoach.csv', 'r') as csvfile:
@@ -55,22 +87,15 @@ def insert_coaches():
       
       insert_query= "INSERT INTO coach (ID, fullName, info, birthDate, birthPlace, team_ID) VALUES (%s, %s, %s, %s, %s, %s)"
       val = (row["ID"], row["name"], row["information"], row["birthDate"], row["birthPlace"], team_ID)
+
       try:
         cur.execute(insert_query, val) 
         conn.commit()
       except BaseException as error:
         print("något gick fel i databasen vid insättning av coach: ", error)
       
-      if row["college"] != None and "{" in row["college"]:
-        collegelist = row["college"].replace(row["college"][0], "")
-        collegelist = collegelist.replace(row["college"][-1], "")
-        collegelist = collegelist.split("|")
-        collegequery = "INSERT INTO coachCollege (coach_ID, college) VALUES (%s, %s)"
-
-        for college in collegelist:
-          college = college.strip()
-          collegeval = (row["ID"],college)
-          cur.execute(collegequery, collegeval)
+      #Insert into coachcollege table
+      insert_multivalued(row["ID"], row["college"], "coachCollege","(coach_ID, college)")
 
   csvfile.close()
 
@@ -79,18 +104,13 @@ def insert_teams():
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     for row in csvreader:
+      checkIfNoneAndStrip(row)
       team_IDs.append((row["id"],row["coach"])) #teamIDs
-      playerTeamIDs.append(row["id"], row["name"])
-      for key, value in row.items():
-        row[key] = row[key].strip()
-        if value == "NULL":
-          row[key] = None
+      teamName_and_IDs.append((row["id"], row["name"]))
 
 
       row["id"] = int(row["id"])
-      year = row["start"].split("-")
-      year = int(year[0])
-      row["start"] = year
+      row["start"] = fix_datatype(row["start"])
       
       
       insert_query= "INSERT INTO team (ID, fullName, ownerName, creationDate) VALUES (%s, %s, %s, %s)"
@@ -99,148 +119,96 @@ def insert_teams():
         cur.execute(insert_query, val)
       except BaseException as error:
         print("något gick fel i databasen vid insättning av coach: ", error)
-      #Loop through the csv file, for each row: 
-      #insert values into the table of teams and
-      #also manage the data about which coach coaches the team.
-      
-      #Dates have one format but contains unneccesary detail (only the year is significant).
-      #Strings may have unnecessary spaces in the beginning.
-      #Some teams have no coach.
   csvfile.close()
+      
 
 def insert_players():
   with open('AmericanFootballPlayer.csv', 'r') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     for row in csvreader:
-      for key, value in row.items():
-        row[key] = row[key].strip()
-        if value == "NULL":
-          row[key] = None
-      print(row["alias"])
+      checkIfNoneAndStrip(row)
 
       row["ID"] = int(row["ID"])
       row["birthDate"] = fix_date(row["birthDate"])
-      if row["draftYear"] == None:
-        continue
-      else:
-        year = row["draftYear"].split("-")
-        year = int(year[0])
-        row["draftYear"] = year
-      if row["weight"] == None:
-        continue
-      else:
-        row["weight"] = float(row["weight"])
-      if row["height"] == None:
-        continue
-      else:
-        row["height"] = float(row["height"])
+      row["draftYear"] = fix_datatype(row["draftYear"])
+      row["weight"] = fix_datatype(row["weight"])
+      row["height"] = fix_datatype(row["height"])
+      
 
       insert_query= "INSERT INTO player (ID, fullName, draftYear, birthDate, birthPlace, _weight, height, info) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
       val = (row["ID"], row["name"], row["draftYear"], row["birthDate"], row["birthPlace"], row["weight"], row["height"], row["information"])
+      
       try:
         cur.execute(insert_query, val)
       except BaseException as error:
         print("något gick fel i databasen vid insättning av coach: ", error)
       
-      if row["alias"] != None and "{" in row["alias"]:
-        aliaslist = row["alias"].replace(row["alias"][0], "")
-        aliaslist = aliaslist.replace(row["alias"][-1], "")
-        aliaslist = aliaslist.split("|")
-        aliasquery = "INSERT INTO playerAlias (player_ID, alias) VALUES (%s, %s)"
-
-        for alias in aliaslist:
-          alias = alias.strip()
-          aliasval = (row["ID"],alias)
-          cur.execute(aliasquery, aliasval)
-
-      if row["position"] != None and "{" in row["position"]:
-        positionlist = row["position"].replace(row["position"][0], "")
-        positionlist = positionlist.replace(row["position"][-1], "")
-        positionlist = positionlist.split("|")
-        positionquery = "INSERT INTO playerPosition (player_ID, position) VALUES (%s, %s)"
-
-        for position in positionlist:
-          position = position.strip()
-          positionval = (row["ID"],position)
-          cur.execute(positionquery, positionval)
-
-
-
-      for i in playerTeam_IDs:
-        if row["team"] != None and "{" in row["team"]:
-          teamlist = row["team"].replace(row["team"][0], "")
-          teamlist = teamlist.replace(row["team"][-1], "")
-          teamlist = teamlist.split("|")
-          for team in teamlist:
-            if i[1] == row["team"]:
-              playerTeam_ID = i[0]
-              current = True
-            else:
-              current = False
-            if i[1] == row["debutTeam"]:
-              playerTeam_ID = i[0]
-              debute = True
-            else:
-              debute = False
-            if i[1] == row["formerTeam"]:
-              playerTeam_ID = i[0]
-              previous = True
-            else:
-              previous = False
-        else:
-          if i[1] == row["team"]:
-            playerTeam_ID = i[0]
-            current = True
-          else:
-            current = False
-          if i[1] == row["debutTeam"]:
-            playerTeam_ID = i[0]
-            debute = True
-          else:
-            debute = False
-          if i[1] == row["formerTeam"]:
-            playerTeam_ID = i[0]
-            previous = True
-          else:
-            previous = False #TODO FIX!
-      
-          
-          
-          
-
-
-      insert_query= "INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (%s, %s, %s, %s, %s)"
-      val = (playerTeam_ID, row["ID"], debute, current, previous)
-      try:
-        cur.execute(insert_query, val)
-      except BaseException as error:
-        print("något gick fel i databasen vid insättning av coach: ", error)
-    #Loop through the csv file, for each row:
-    #Insert information into the tables representing players, player aliases and player positions.
-    #There may be several aliases and positions in a cell, or "NULL" which should be handled appropriately.
-    #Dates have two different formats that must be converted.
-    
-    #Also (for each row) manage the information concerning the player´s debut team, current teams (the column Team) and former teams:
-    #Debut teams are always single but may be NULL or team names that do not exist previously.
-    #Team and Former Team may contain NULL, one team name or several team names that may or may not exist previously. "NULL" should be handled appropriately.
-    #Team may also contain the string "Free Agent". This is not a team.
-    
-    #Team names that do not exist previously should be created (i.e. inserted into the table representing teams and given a new, unique, team ID).
-    #Note that debut team, team and former team are given as names but should be replaced with team IDs in the appropriate tables.
+      #Insert into playerAlias and playerPosition table
+      insert_multivalued(row["ID"],row["alias"], "playerAlias","(player_ID, alias)")
+      insert_multivalued(row["ID"],row["position"], "playerPosition","(player_ID, position)")
   csvfile.close()
+
+def insert_teamPlayers():
+  with open('AmericanFootballPlayer.csv', 'r') as csvPlayers:
+    players = csv.DictReader(csvPlayers, delimiter = ',')
+
+    for player_row in players:
+      checkIfNoneAndStrip(row)
+      player_id = int(player_row["ID"])
+
+      current_teams = player_row["team"].split(',')  # Teams the player is currently in (present)
+      former_teams = player_row["formerTeam"].split(',')  # Former teams (previous)
+      debut_team = player_row["debutTeam"]  # Debut team
+      
+      # Insert into teamPlayer table for present teams
+      for team_name in current_teams:
+        cur.execute("SELECT ID FROM team WHERE fullName = %s", (team_name,))
+        team_result = cur.fetchone()
+        if team_result:
+            team_id = team_result[0]
+
+            # Insert for the present team
+            debute = False
+            present = True
+            previous = False
+            if team_name == debut_team:  # If this is the debut team
+                debute = True
+
+            # Insert into the teamPlayer table
+            cur.execute("""
+                INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (team_id, player_id, debute, present, previous))
+
+      for team_name in former_teams:
+        cur.execute("SELECT ID FROM team WHERE fullName = %s", (team_name,))
+        team_result = cur.fetchone()
+        if team_result:
+          team_id = team_result[0]
+
+          # Insert for the previous team
+          debute = False
+          present = False
+          previous = True
+
+          # Insert into the teamPlayer table
+          cur.execute("""
+              INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous)
+              VALUES (%s, %s, %s, %s, %s)
+          """, (team_id, player_id, debute, present, previous))
 
 
 if __name__ == "__main__":
   #Create database connection, use the password that was sent to you by email
   try:
-    conn = pymysql.connect(host='mariadb.edu.liu.se', port=3306, user='klabe908', passwd='klabe90879b6', db='klabe908')
+    conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='test')
     cur = conn.cursor()
 
     insert_teams()
     insert_coaches()
     insert_players()
-    #print(team_IDs)
+    insert_teamPlayers()
 
     #Close the database connection
     cur.close()

@@ -179,27 +179,56 @@ def insert_teamPlayers():
         if team_result:
           team_id = team_result[0]
 
-          # Insert for the previous team
           debute = False
           present = False
           previous = True
-          if team_name == debut_team:  # If this is the debut team
+          if team_name == debut_team:
                 debute = True
-          # Insert into the teamPlayer table
+
           cur.execute("INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (%s, %s, %s, %s, %s)", (team_id, player_id, debute, present, previous))
 
+def create_tables(path):
+  with open(path, 'r') as file:
+    sql = file.read()
+
+  try:
+      for statement in sql.split(';'):
+          if statement.strip():
+              cur.execute(statement)
+
+      # Commit the changes
+      conn.commit()
+
+  except pymysql.MySQLError as e:
+      print(f"An error occurred: {e}")
+      conn.rollback()
+
+def sql_query():
+  while True:
+    print("Type 'q' to stop")
+    statement = input("MySql: ")
+    if statement == "q":
+      return False
+    cur.execute(statement)
+    tables = cur.fetchall()
+
+    for table in tables:
+      print(table)
+    print("\n")
 
 if __name__ == "__main__":
   #Create database connection, use the password that was sent to you by email
   try:
     conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='test')
     cur = conn.cursor()
+    create_tables("C:/xampp/htdocs/729G28/projB_gN_schema.sql")
 
     insert_teams()
     insert_coaches()
     insert_players()
-    insert_teamPlayers()
+    #insert_teamPlayers()
 
+    sql_query()
     #Close the database connection
     cur.close()
     conn.commit()

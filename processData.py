@@ -64,7 +64,6 @@ def checkIfNoneAndStrip(row):
 
 
 team_IDs = []
-teamName_and_IDs = []
 
 def insert_coaches():
   with open('AmericanFootballCoach.csv', 'r') as csvfile:
@@ -106,7 +105,6 @@ def insert_teams():
     for row in csvreader:
       checkIfNoneAndStrip(row)
       team_IDs.append((row["id"],row["coach"])) #teamIDs
-      teamName_and_IDs.append((row["id"], row["name"]))
 
 
       row["id"] = int(row["id"])

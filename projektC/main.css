@@ -1,0 +1,17 @@
+/* all annan layout i labben sköts av filen bootstrap_theemed.css, bootstrap är ett css-ramverk med många färdigskriva klasser att använda i sin html */
+
+.customHeader{
+/* styla om headern så att texten centreras och får en annan färg*/
+    text-align: center;
+    color: orange;
+}
+
+.person{
+/* gör så att elementet ändrar utseende/placering på minst tre olika sätt */
+    color: rgb(235, 223, 223);
+    text-shadow: #FC0 0.25rem 0 0.5rem;
+    border: 0.5rem groove hsl(32, 55%, 33%);
+    padding: 1rem;
+}
+
+/*ändra också klassen .breadcrumbs här*/

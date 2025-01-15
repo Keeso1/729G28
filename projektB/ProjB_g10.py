@@ -72,7 +72,7 @@ def checkIfNoneAndStrip(row):
       row[key] = None
 
 def get_team_coaches():
-  with open('AmericanFootballTeam.csv', 'r') as csvfile:
+  with open('projektB/AmericanFootballTeam.csv', 'r') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     teamCoaches = {}
@@ -88,7 +88,7 @@ def get_team_coaches():
 
 
 def insert_coaches():
-  with open('AmericanFootballCoach.csv', 'r') as csvfile:
+  with open('projektB/AmericanFootballCoach.csv', 'r') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     for row in csvreader:
@@ -122,7 +122,7 @@ def insert_coaches():
   csvfile.close()
 
 def insert_teams():
-  with open('AmericanFootballTeam.csv', 'r') as csvfile:
+  with open('projektB/AmericanFootballTeam.csv', 'r') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     for row in csvreader:
@@ -143,7 +143,7 @@ def insert_teams():
       
 
 def insert_players():
-  with open('AmericanFootballPlayer.csv', 'r') as csvfile:
+  with open('projektB/AmericanFootballPlayer.csv', 'r') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter = ',')
 
     for row in csvreader:
@@ -241,7 +241,7 @@ def check_if_exist_make_new_team(team_name):
 
 def insert_teamPlayers():
   """Uppdaterad inför redovisning"""
-  with open('AmericanFootballPlayer.csv', 'r') as csvPlayers:
+  with open('projektB/AmericanFootballPlayer.csv', 'r') as csvPlayers:
     players = csv.DictReader(csvPlayers, delimiter = ',')
 
     for player_row in players:
@@ -295,17 +295,48 @@ def insert_teamPlayers():
       for lst in finalSave:
         cur.execute("INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (%s, %s, %s, %s, %s)", (lst[1], lst[0], lst[2], lst[3], lst[4]))
 
+def create_tables(path):
+  with open(path, 'r') as file:
+    sql = file.read()
+
+  try:
+      for statement in sql.split(';'):
+          if statement.strip():
+              cur.execute(statement)
+
+      # Commit the changes
+      conn.commit()
+
+  except pymysql.MySQLError as e:
+      print(f"An error occurred: {e}")
+      conn.rollback()
+
+def sql_query():
+  while True:
+    print("Type 'q' to stop")
+    statement = input("MySql: ")
+    if statement == "q":
+      return False
+    cur.execute(statement)
+    tables = cur.fetchall()
+
+    for table in tables:
+      print(table)
+    print("\n")
+
 if __name__ == "__main__":
   #Create database connection, use the password that was sent to you by email
   try:
-    conn = pymysql.connect(host='mariadb.edu.liu.se', port=3306, user='klabe908', passwd='klabe90879b6', db='klabe908')
+    conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='test')
     cur = conn.cursor()
+    create_tables("C:/xampp/htdocs/729G28/projektB/projB_g10_schema.sql")
 
     insert_teams()
     insert_coaches()
     insert_players()
     insert_teamPlayers()
 
+    sql_query()
     #Close the database connection
     cur.close()
     conn.commit()

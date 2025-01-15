@@ -1,10 +1,10 @@
 <?php
 function connectDB() {
 	//Enter your own database connectivity information here.
-	$servername = "mariadb.edu.liu.se";
-	$username = "klabe908";
-	$password = "klabe90879b6";
-	$db = "klabe908";
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$db = "test";
 
 	// Create connection
 	$conn = new mysqli($servername, $username, $password, $db);
@@ -32,45 +32,7 @@ function echo_multivalued($member_key){
 		}
 		return $final_string;
 	} else {
-			return $member_key;
-	}
-}
-
-function echo_debute($teamName) {
-	echo "<li>Debute Team(s): ". echo_team_multivalued($player_info["team_ID"])."</li>"
-}
-
-function echo_previous($teamName) {
-
-}
-
-
-function echo_team_multivalued($member_key){
-	if (is_array($member_key)){
-		$final_string = "";
-		console_log($member_key);
-		foreach($member_key as $key => $value){
-
-			$stmt = $conn->prepare("SELECT fullName FROM team WHERE ID = $key");
-			$stmt->execute();
-			$teamName = $stmt->get_result();
-
-			if ($value["debute"]){
-				echo_debute($teamName);
-			}
-
-			if ($value["previous"]){
-				echo_previous($teamName);
-			}
-
-
-			$final_string .= $value. ", ";
-			console_log($key);
-			console_log($value);
-		}
-		return $final_string;
-	} else {
-			return $member_key;
+		return $member_key;
 	}
 }
 
@@ -160,6 +122,30 @@ function merge_AP($row, $player_AP_array){
 	return $player_AP_array; //DONE
 }
 
+function get_previous_debute_present($conn, $teamrow, &$player_team_array){
+
+	$teamID = $teamrow["team_ID"];
+	$stmt = $conn->prepare("SELECT fullName FROM team WHERE ID = ?");
+	$stmt->bind_param("i", $teamID);
+	$stmt->execute();
+
+	$teamNAME = $stmt->get_result()->fetch_column();
+
+	if($teamrow["debute"] == 1){
+		$player_team_array["debute"][] = $teamNAME;
+	}
+
+	if($teamrow["present"] == 1){
+		$player_team_array["present"][] = $teamNAME;
+	}
+
+	if($teamrow["previous"] == 1){
+		if (!$teamrow["present"] == 1){
+			$player_team_array["previous"][] = $teamNAME;
+		}
+	}
+}
+
 function get_player_info($conn, $playerID){
 	//fetch player data from database. Don't forget former teams, aliases and positions.
 	//Return an associative array
@@ -172,22 +158,21 @@ function get_player_info($conn, $playerID){
 
 	while ($row = $APresult->fetch_assoc()){
 		$player_AP_array = merge_AP($row, $player_AP_array);
-
 	}
 
 	$player_team_info = $conn->prepare("SELECT * FROM teamPlayer WHERE player_ID = $playerID");
 	$player_team_info->execute();
 
 	$teamresult = $player_team_info->get_result();
-	$player_team_array = array();
+	$player_team_array = array("debute" => array(), "present" => array(), "previous" => array());
 
 	while ($row = $teamresult->fetch_assoc()){
-		$player_team_array[$row["team_ID"]] = $row;
+		get_previous_debute_present(connectDB(), $row, $player_team_array);
 	}
 
-
-
-	$player_AP_array["team_ID"] = $player_team_array;
+	$player_AP_array["debute"] = $player_team_array["debute"];
+	$player_AP_array["present"] = $player_team_array["present"];
+	$player_AP_array["previous"] = $player_team_array["previous"];
 	return $player_AP_array; //DONE
 }// end function get_player_info
 
@@ -197,9 +182,12 @@ function get_coach_info($conn, $coachID){
 	$stmt = $conn->prepare("SELECT * FROM coach LEFT JOIN coachCollege ON ID = coach_ID WHERE ID = $coachID");
 	$stmt->execute();
 
-	$result = $stmt->get_result();
-	$row = $result->fetch_assoc();
-	return $row;
+	$coachresult = $stmt->get_result();
+	$coacharray = array();
+	while ($row = $coachresult->fetch_assoc()){
+		$coacharray = merge_AP($row, $coacharray);
+	}
+	return $coacharray;
 }// end function get_coach_info
 
 //------------------------------------------------------------------------------------

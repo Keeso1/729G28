@@ -41,8 +41,21 @@
     </div>
     <ul class="breadcrumb">
         <li><a href="home.php">Home</a></li>
-        <li><a href="<!-- beöhver fyllas i med vilket lag det gäller-->">Team</a></li>
-        <li class="active">Player</li>
+        <?php
+        echo "<li>"     
+                . "<a href='team.php?teamID=" . $selected_team["ID"]."'>"
+                . $selected_team["fullName"]
+                . "</a>"
+                . "</li>"
+                . "<li class='active'>";
+        if ($_GET["role"] == "player"){
+            echo $player_info["fullName"];
+        }
+        elseif ($_GET["role"] == "coach"){
+            echo $coach_info["fullName"];
+        }
+        echo "</li>";
+        ?>
     </ul>
     <div class="container xs-8">
         <article class="person">
@@ -50,12 +63,15 @@
             <?php
                 if ($_GET["role"] == "coach"){
                     echo "
-                    <h1>". $coach_info["fullName"]."</h1>"
-                    . "<p>". $coach_info["info"] . "</p>
-                    ";
+                    <h2>". $coach_info["fullName"]."</h2>"
+                    . "<p>". $coach_info["info"] . "</p>"
+                    . "<ul>"
+                    . "<li>BirthDate: ".$coach_info["birthDate"]."</li>"
+                    . "<li>BirthPlace: ".$coach_info["birthPlace"]."</li>"
+                    . "</ul>";
                 } elseif ($_GET["role"] == "player"){
                     echo "
-                    <h1>". $player_info["fullName"]."</h1>"
+                    <h2>". $player_info["fullName"]."</h2>"
                     . "<p>". $player_info["info"] . "</p>"
                     . "<ul>"
                     . "<li>BirthDate: ".$player_info["birthDate"]."</li>"
@@ -65,7 +81,9 @@
                     . "<li>Draftyear: ".$player_info["draftYear"]."</li>"
                     . "<li>Alias: ". echo_multivalued($player_info["alias"])."</li>"
                     . "<li>Position: ". echo_multivalued($player_info["position"])."</li>"
-                    . echo_team_multivalued($player_info["team_ID"])
+                    . "<li>Debute Team(s): ". echo_multivalued($player_info["debute"])."</li>"
+                    . "<li>Current Team(s): ". echo_multivalued($player_info["present"])."</li>"
+                    . "<li>Previous Team(s): ". echo_multivalued($player_info["previous"])."</li>"
                     . "</ul>";
                 } else {
                     echo "

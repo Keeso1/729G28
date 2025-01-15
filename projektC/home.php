@@ -36,7 +36,6 @@
                     $teams_list = get_teams_list(connectDB(), $sortBy);
                     foreach ($teams_list as $x){
                         echo "<tr>"
-                        
                         . "<td>" 
                         . "<a href='team.php?teamID=" . $x["ID"] . "'>"
                         . $x["fullName"] 
@@ -44,7 +43,6 @@
                         . "</td>"
                         . "<td>" . $x["creationDate"] . "</td>"
                         . "<td>" . $x["ownerName"] . "</td>"
-                        
                         . "</tr>";
                     }
                 }

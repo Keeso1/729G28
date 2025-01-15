@@ -28,7 +28,15 @@
     </div>
     <ul class="breadcrumb">
         <li><a href="home.php">Home</a></li>
-        <li class="active">Team</li>
+        <li class="active">
+            <?php 
+            if ($selected_team["fullName"]){
+                echo $selected_team["fullName"];
+            } else{
+                echo "Team";
+            }
+            ?>
+        </li>
     </ul>
     <div class="container xs-8">
         <h3>Coaches</h3>

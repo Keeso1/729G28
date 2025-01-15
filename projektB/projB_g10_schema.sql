@@ -5,9 +5,16 @@ DROP TABLE IF EXISTS coach CASCADE;
 DROP TABLE IF EXISTS teamPlayer CASCADE;
 DROP TABLE IF EXISTS player CASCADE;
 DROP TABLE IF EXISTS team CASCADE;
+DROP TABLE IF EXISTS user CASCADE;
 
 
 
+CREATE TABLE user (
+    userName nvarchar(255),
+    email nvarchar(255),
+    CONSTRAINT userName PRIMARY KEY (userName),
+    userPassword VARCHAR(255)
+) ENGINE=InnoDB;
 
 CREATE TABLE team (
     ID int not null check(ID > 0),
@@ -25,7 +32,9 @@ CREATE TABLE player (
     birthPlace varchar(255),
     _weight float(11,4),
     height float (11,4),
-    info varchar(500)
+    info varchar(500),
+    userName nvarchar(255),
+    foreign key (userName) references user (userName)
 ) ENGINE=InnoDB;
 
 CREATE TABLE teamPlayer (

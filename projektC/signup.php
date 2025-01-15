@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="main.css">
 	<?php
 		//// Do proper changes to connectdb.php and include it here.
+		require __DIR__ . '/connectdb.php';
 	?>
     </head>
     <body>
@@ -33,7 +34,38 @@
 		<?php
 			if (!isset($_POST['submit'])){
 			}else{
+				$name = trim($_POST['name']);
+				$email = trim($_POST['email']);
+				$password = trim($_POST['password']);
+				$errors = [];
 
+				if (empty($name)) {
+					$errors[] = "Name is required.";
+				}
+				if (empty($email) or !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+					$errors[] = "Valid email is required.";
+				}
+				if (empty($password) or strlen($password) < 8) {
+					$errors[] = "Password must be at least 8 characters long.";
+				}
+
+
+				if (!empty($errors)) {
+					// Display errors to the user
+					foreach ($errors as $error) {
+						echo "<p style='color: red;'>$error</p>";
+					}
+				} else {
+					$userInfo = [
+						'name' => $name,
+						'email' => $email,
+						'password' => $password
+					];
+					echo add_user(connectDB(), $userInfo)["message"];
+				}
+
+
+				console_log($errors);
 				//Here you need to 1. Read and validate the incoming data based on the requirements 2. Store the user if the validation is successful 3. Show an appropriate message.
 				// $conn is your database endpoint and shall be used for working with the database.
 			}

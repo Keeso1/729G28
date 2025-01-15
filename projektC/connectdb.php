@@ -196,6 +196,42 @@ function get_coach_info($conn, $coachID){
 function add_user($conn, $userInfo) {
 	//add a user into the database. Assume data is validated but check for unique name and email.
 	//return something that means the user was added or not.
+	$name = $userInfo['name'];
+    $email = $userInfo['email'];
+    $password = $userInfo['password'];
+
+    // Step 1: Check for unique username (name) only
+    $stmt = $conn->prepare("SELECT * FROM user WHERE userName = ?");
+    $stmt->bind_param("s", $name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Username already exists
+        return [
+            'success' => false,
+            'message' => 'A user with this username already exists.'
+        ];
+    }
+
+	// Step 2: Add the user to the database
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // Hash the password
+    $stmt = $conn->prepare("INSERT INTO user (userName, email, userPassword) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $name, $email, $hashedPassword);
+
+    if ($stmt->execute()) {
+        // Successfully added the user
+        return [
+            'success' => true,
+            'message' => 'User successfully added.'
+        ];
+    } else {
+        // Failed to add the user
+        return [
+            'success' => false,
+            'message' => 'Failed to add the user: ' . $stmt->error
+        ];
+    }
 }// end function add_user
 
 function add_player($conn, $team, $playerInfo, $user) {

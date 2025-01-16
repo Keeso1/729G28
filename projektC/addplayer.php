@@ -15,7 +15,7 @@ $selected_team = get_team_info(connectDB(), $_GET['teamID']);
     <body>
 	    <div class="jumbotron">
 			<header class ="customHeader">
-				<h1>Add player</h1>
+				<h1>Add player to <?php echo $selected_team["fullName"]?></h1>
 				<p>Here you can add a new player.</p>
 				<p>You are Logged in as: <?php echo $_SESSION["userName"]; ?></p>
 			</header>

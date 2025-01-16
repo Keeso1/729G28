@@ -252,8 +252,8 @@ function add_user($conn, $userInfo) {
     $password = $userInfo['password'];
 
     // Step 1: Check for unique username (name) only
-    $stmt = $conn->prepare("SELECT * FROM user WHERE userName = ?");
-    $stmt->bind_param("s", $name); // Do this on every other prepared statement
+    $stmt = $conn->prepare("SELECT * FROM user WHERE userName = ? OR email = ?");
+    $stmt->bind_param("ss", $name, $email); // Do this on every other prepared statement
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -262,7 +262,7 @@ function add_user($conn, $userInfo) {
         // Username already exists
         return [
             'success' => false,
-            'message' => 'A user with this username already exists.'
+            'message' => "<p style='color: red;'>User or email already exists."
         ];
     }
 
@@ -281,7 +281,7 @@ function add_user($conn, $userInfo) {
         // Failed to add the user
         return [
             'success' => false,
-            'message' => 'Failed to add the user: ' . $stmt->error
+            'message' => "<p style='color: red;'>Failed to add the user: " . $stmt->error. "</p>"
         ];
     }
 }// end function add_user

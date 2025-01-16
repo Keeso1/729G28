@@ -20,6 +20,7 @@ require __DIR__ . '/connectdb.php';
 	    </div>
 	    <ul class="breadcrumb">
 			<li><a href="home.php">Home</a></li>
+			<li class="active">Sign in</li>
 			<!-- Add proper breadcrumbs -->
 	    </ul>
 	    <div class="container xs-8">

@@ -62,7 +62,7 @@ require __DIR__ . '/connectdb.php';
 						'email' => $email,
 						'password' => $password
 					];
-					echo add_user(connectDB(), $userInfo)["message"];
+					echo add_user(connectDB(), $userInfo);
 				}
 
 

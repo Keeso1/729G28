@@ -69,7 +69,7 @@ $selected_team = get_team_info(connectDB(), $_GET['teamID']);
 							'birthdate' => $birthdate,
 							'information' => $information
 						];
-						echo add_player(connectDB(), $_GET['teamID'], $playerInfo, $_SESSION["userName"])["message"];
+						echo add_player(connectDB(), $_GET['teamID'], $playerInfo, $_SESSION["userName"]);
 					}
 
 

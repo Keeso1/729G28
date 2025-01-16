@@ -79,7 +79,7 @@ $selected_team = get_team_info(connectDB(), $_GET['teamID']);
 							'birthdate' => $birthdate,
 							'information' => $information
 						];
-						echo update_player(connectDB(), $playerInfo)["message"];
+						echo update_player(connectDB(), $playerInfo);
 						// header("Location: teammember.php?memberID=" . $_GET["memberID"] . "&teamID=". $_GET['teamID']."&role=player");
 					}
 					//Here you need to 1. Read and validate the incoming data based on the requirements 2. Store the user if the validation is successful 3. Show an appropriate message.

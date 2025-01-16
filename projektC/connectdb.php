@@ -200,7 +200,7 @@ function get_coach_info($conn, $coachID){
 
 if (isset($_GET['logout'])) {
 	// Destroy the session when logout is requested
-	session_unset(); // Optional: clears all session variables
+	session_unset(); // clears all session variables
 	session_destroy(); // Destroys the session
 	console_log("session_killed");
 }
@@ -219,27 +219,18 @@ function log_in($conn, $userInfo){
 
 	if ($result->num_rows > 0) {
 		$result = $result->fetch_assoc();
-		// Username already exists
+		// Username exists
 		if ($result["email"] == $email And password_verify($password, $result["userPassword"])){
 			console_log("session variabel ska sättas");
 			console_log($_SESSION);
 			$_SESSION['userName'] = $_POST["name"];
 			console_log($_SESSION);
-			return [
-				'success' => true,
-				'message' => 'You are logged in as '. $_SESSION["userName"] //SESSION är startad och $_SESSION["userName"] är satt
-			];
+			return "<p style='color: green;'>You are logged in as: " . $_SESSION['userName'] . "</p>"; //Login Success message, SESSION is started and $_SESSION["userName"] is set
 		} else{
-			return [
-				'success' => false,
-				'message' => 'Incorrect Email or Password'
-			];
+			return "<p style='color: red;'>Incorrect Email or Password</p>"; //Login failure
 		}
 	} else {
-		return [
-			'success' => false,
-			'message' => 'A user with this username does not exists'
-		];
+		return "<p style='color: red;'>A user with this username does not exists</p>"; // Login failure: Username not in database
 
 	}
 		
@@ -260,10 +251,7 @@ function add_user($conn, $userInfo) {
 	console_log($result->num_rows);
     if ($result->num_rows > 0) {
         // Username already exists
-        return [
-            'success' => false,
-            'message' => "<p style='color: red;'>User or email already exists."
-        ];
+        return "<p style='color: red;'>User or email already exists.</p>";
     }
 
 	// Step 2: Add the user to the database
@@ -273,16 +261,7 @@ function add_user($conn, $userInfo) {
 
     if ($stmt->execute()) {
         // Successfully added the user
-        return [
-            'success' => true,
-            'message' => "<p style='color: green;'> User successfully added.</p>"
-        ];
-    } else {
-        // Failed to add the user
-        return [
-            'success' => false,
-            'message' => "<p style='color: red;'>Failed to add the user: " . $stmt->error. "</p>"
-        ];
+        return "<p style='color: green;'> User successfully added.</p>"; //Message sent
     }
 }// end function add_user
 
@@ -300,7 +279,6 @@ function add_player($conn, $team, $playerInfo, $user) {
 	$present = true;
 	$previous = false;
 
-    // Step 1: Check for unique username (name) only
     $stmt = $conn->prepare("SELECT MAX(ID) AS max_id FROM player");
     $stmt->execute();
     $result = $stmt->get_result()->fetch_column();
@@ -309,7 +287,6 @@ function add_player($conn, $team, $playerInfo, $user) {
 	$new_id = $result + 1;
 	console_log($new_id);
 
-	// Step 2: Add the user to the database
     $stmt = $conn->prepare("INSERT INTO player (ID, fullName, draftYear, birthDate, birthPlace, _weight, height, info, userName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("isissddss", $new_id, $name, $draftYear, $birthdate, $birthplace, $weight, $length, $information, $user);
 
@@ -317,17 +294,8 @@ function add_player($conn, $team, $playerInfo, $user) {
 	$teamstmt->bind_param("iiiii", $team, $new_id, $debute, $present, $previous);
 
     if ($stmt->execute() And $teamstmt->execute()) {
-        // Successfully added the user
-        return [
-            'success' => true,
-            'message' => "<p style='color: green;'> User successfully added.</p>"
-        ];
-    } else {
-        // Failed to add the user
-        return [
-            'success' => false,
-            'message' => 'Failed to add the user: ' . $stmt->error
-        ];
+        // Successfully added the player
+        return "<p style='color: green;'> Player successfully added.</p>";
     }
 }//end function add_player
 
@@ -341,22 +309,12 @@ function update_player($conn, $playerInfo) {
 	$birthdate = $playerInfo['birthdate'];
 	$information = $playerInfo['information'];
 
-	// Step 2: Add the user to the database
     $stmt = $conn->prepare("UPDATE player SET fullName= ?, birthDate= ?, _weight = ?, height = ?, info = ? WHERE ID = ?");
     $stmt->bind_param("ssddsi", $name, $birthdate, $weight, $length, $information, $ID);
 
     if ($stmt->execute()) {
-        // Successfully added the user
-        return [
-            'success' => true,
-            'message' => "<p style='color: green;'> User successfully Updated.</p>"
-        ];
-    } else {
-        // Failed to add the user
-        return [
-            'success' => false,
-            'message' => 'Failed to update the user: ' . $stmt->error
-        ];
+        // Successfully updated player
+        return "<p style='color: green;'> Player successfully Updated.</p>"; // Update success
     }
 }//end function update player
 

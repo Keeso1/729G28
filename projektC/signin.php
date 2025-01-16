@@ -64,7 +64,7 @@ require __DIR__ . '/connectdb.php';
 						'email' => $email,
 						'password' => $password
 					];
-					echo log_in(connectDB(), $userInfo)["message"];
+					echo log_in(connectDB(), $userInfo);
 				}
 
 

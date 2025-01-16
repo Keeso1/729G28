@@ -1,3 +1,6 @@
+<?php
+require __DIR__ . '/connectdb.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,7 +15,6 @@
     <div class="jumbotron customHeader">
         <!-- ersätt med php -->
         <?php
-        require __DIR__ . '/connectdb.php';
         if ($selected_team = get_team_info(connectDB(), $_GET['teamID'])){ // Check if team exist
             echo "<h1>". $selected_team["fullName"] ."</h1>"
             . "<h3>". $selected_team["ownerName"] ."</h3>"
@@ -23,6 +25,12 @@
                 <h3>OWNER OF TEAM</h3>
                 <p>START</p>
                 ";
+        }
+
+        if (isset($_SESSION["userName"])){
+            echo "<p>Logged in as: ". $_SESSION["userName"]. "</p>";
+            echo "<a href='addplayer.php?teamID=". $_GET['teamID'] . "'>"
+            . "Add Player<a/>";
         }
         ?>
     </div>

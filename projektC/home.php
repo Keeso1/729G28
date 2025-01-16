@@ -1,3 +1,6 @@
+<?php
+require __DIR__ . '/connectdb.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,6 +17,14 @@
         <header class ="customHeader">
             <h1>NFL TEAMS</h1>
             <p>The teams of the NFL, click on a team for their full roster</p>
+            <?php
+            if (isset($_SESSION["userName"])){
+                echo "<p>Logged in as: ". $_SESSION["userName"]. "</p>";
+                echo "<a href='home.php?logout=true'>Log out</a>";
+            } else {
+                echo "<a href='signin.php'>Sign in</a>";
+            }
+            ?>
         </header>
     </div>
     <div class="container xs-8">
@@ -30,7 +41,6 @@
             <tbody>
             <!-- Hämtar in alla teams från databasen, och skapar en rad för varje team-->
             <?php
-                require __DIR__ . '/connectdb.php';
                 $safeVar = array("fullName", "creationDate", "ownerName");
                 function update_page($sortBy){
                     $teams_list = get_teams_list(connectDB(), $sortBy);

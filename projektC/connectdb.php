@@ -1,4 +1,7 @@
 <?php
+session_start();
+?>
+<?php
 function connectDB() {
 	//Enter your own database connectivity information here.
 	$servername = "localhost";
@@ -193,6 +196,16 @@ function get_coach_info($conn, $coachID){
 
 //------------------------------------------------------------------------------------
 //Funktioner för del D
+
+
+if (isset($_GET['logout'])) {
+	// Destroy the session when logout is requested
+	session_unset(); // Optional: clears all session variables
+	session_destroy(); // Destroys the session
+	console_log("session_killed");
+}
+
+
 function log_in($conn, $userInfo){
 	$name = $userInfo['name'];
 	$email = $userInfo['email'];
@@ -204,13 +217,14 @@ function log_in($conn, $userInfo){
 	$stmt->execute();
 	$result = $stmt->get_result();
 
-	console_log($result->num_rows);
 	if ($result->num_rows > 0) {
 		$result = $result->fetch_assoc();
 		// Username already exists
 		if ($result["email"] == $email And password_verify($password, $result["userPassword"])){
-			session_start();
-			$_SESSION["userName"] = $name;
+			console_log("session variabel ska sättas");
+			console_log($_SESSION);
+			$_SESSION['userName'] = $_POST["name"];
+			console_log($_SESSION);
 			return [
 				'success' => true,
 				'message' => 'You are logged in as '. $_SESSION["userName"] //SESSION är startad och $_SESSION["userName"] är satt
@@ -275,11 +289,75 @@ function add_user($conn, $userInfo) {
 function add_player($conn, $team, $playerInfo, $user) {
 	//add a player into the database. Assume data is validated and don't forget to add which team the player plays in.
 	//return something that means the player was added or not.
+	$name = $playerInfo['name'];
+	$weight = $playerInfo['weight'];
+	$length = $playerInfo['length'];
+	$birthdate = $playerInfo['birthdate'];
+	$information = $playerInfo['information'];
+	$draftYear = NULL;
+	$birthplace = NULL;
+	$debute = NULL;
+	$present = true;
+	$previous = false;
+
+    // Step 1: Check for unique username (name) only
+    $stmt = $conn->prepare("SELECT MAX(ID) AS max_id FROM player");
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_column();
+
+	console_log($result);
+	$new_id = $result + 1;
+	console_log($new_id);
+
+	// Step 2: Add the user to the database
+    $stmt = $conn->prepare("INSERT INTO player (ID, fullName, draftYear, birthDate, birthPlace, _weight, height, info, userName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("isissddss", $new_id, $name, $draftYear, $birthdate, $birthplace, $weight, $length, $information, $user);
+
+	$teamstmt = $conn->prepare("INSERT INTO teamPlayer (team_ID, player_ID, debute, present, previous) VALUES (?, ?, ?, ?, ?)");
+	$teamstmt->bind_param("iiiii", $team, $new_id, $debute, $present, $previous);
+
+    if ($stmt->execute() And $teamstmt->execute()) {
+        // Successfully added the user
+        return [
+            'success' => true,
+            'message' => "<p style='color: green;'> User successfully added.</p>"
+        ];
+    } else {
+        // Failed to add the user
+        return [
+            'success' => false,
+            'message' => 'Failed to add the user: ' . $stmt->error
+        ];
+    }
 }//end function add_player
 
 function update_player($conn, $playerInfo) {
 	//update a player in the database. Assume data is validated.
 	//return something that means the player was updated or not.
+	$ID = $playerInfo["ID"];
+	$name = $playerInfo['name'];
+	$weight = $playerInfo['weight'];
+	$length = $playerInfo['length'];
+	$birthdate = $playerInfo['birthdate'];
+	$information = $playerInfo['information'];
+
+	// Step 2: Add the user to the database
+    $stmt = $conn->prepare("UPDATE player SET fullName= ?, birthDate= ?, _weight = ?, height = ?, info = ? WHERE ID = ?");
+    $stmt->bind_param("ssddsi", $name, $birthdate, $weight, $length, $information, $ID);
+
+    if ($stmt->execute()) {
+        // Successfully added the user
+        return [
+            'success' => true,
+            'message' => "<p style='color: green;'> User successfully Updated.</p>"
+        ];
+    } else {
+        // Failed to add the user
+        return [
+            'success' => false,
+            'message' => 'Failed to update the user: ' . $stmt->error
+        ];
+    }
 }//end function update player
 
 ?>

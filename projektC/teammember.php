@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,12 +7,15 @@
         <meta name="description" content="Team Rosters">
         <link rel="stylesheet" href="bootstrap_themed.css">
         <link rel="stylesheet" href="main.css">
+    <?php
+		//// Do proper changes to connectdb.php and include it here.
+		require __DIR__ . '/connectdb.php';
+	?>
     </head>
     <body>
     <div class="jumbotron">
         <header class ="customHeader">
             <?php
-            require __DIR__ . '/connectdb.php';
             if ($_GET["role"] == "coach"){
                 $coach_info = get_coach_info(connectdb(), $_GET["memberID"]);
                 $selected_team = get_team_info(connectDB(), $_GET['teamID']);
@@ -28,8 +30,15 @@
 
                 echo "
                 <h1>". $selected_team["fullName"]."</h1>"
-                . "<p>Player</p>
-                ";
+                . "<p>Player</p>";
+
+                if (isset($_SESSION["userName"])){
+                    if ($player_info["userName"] == $_SESSION["userName"]){
+                        echo "<p>You are logged in as: ". $_SESSION["userName"]. "</p>";
+                        echo "<a href='updateplayer.php?memberID=" . $_GET["memberID"] . "&teamID=". $_GET['teamID']."&role=player'>"
+                    . "Update player</a>";
+                    }
+                }
             } else {
                 echo "
                     <h1>TEAM NAME</h1>

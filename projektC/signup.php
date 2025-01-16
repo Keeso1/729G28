@@ -1,3 +1,6 @@
+<?php
+require __DIR__ . '/connectdb.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,10 +10,6 @@
         <meta name="description" content="Team Rosters">
         <link rel="stylesheet" href="bootstrap_themed.css">
         <link rel="stylesheet" href="main.css">
-	<?php
-		//// Do proper changes to connectdb.php and include it here.
-		require __DIR__ . '/connectdb.php';
-	?>
     </head>
     <body>
 	    <div class="jumbotron">
@@ -20,7 +19,7 @@
 			</header>
 	    </div>
 	    <ul class="breadcrumb">
-			<li><a href="index.php">Home</a></li>
+			<li><a href="home.php">Home</a></li>
 			<!-- Add proper breadcrumbs -->
 	    </ul>
 	    <div class="container xs-8">
@@ -29,14 +28,14 @@
 				<label>Name:<input type="text" name="name"></label><br>
 				<label>Email:<input type="text" name="email"></label><br>
 				<label>Password:<input type="password" name="password"></label><br>
-				<input type="submit" name="submit" value="Sign up">
+				<input type="submit" name="usersubmit" value="Sign up">
 			</form>
 		<?php
-			if (!isset($_POST['submit'])){
+			if (!isset($_POST['usersubmit'])){
 			}else{
-				$name = trim($_POST['name']);
-				$email = trim($_POST['email']);
-				$password = trim($_POST['password']);
+				$name = htmlspecialchars(trim($_POST['name']));
+				$email = htmlspecialchars(trim($_POST['email']));
+				$password = htmlspecialchars(trim($_POST['password']));
 				$errors = array();
 
 				if (empty($name)) {

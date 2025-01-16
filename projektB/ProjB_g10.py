@@ -62,7 +62,6 @@ def insert_multivalued(id, dictitem, tablename,value_tuple):
       itemquery = f"INSERT INTO {tablename} {value_tuple} VALUES ({placeholders})"
       itemval = (id, dictitem)
       cur.execute(itemquery, itemval)
-      #Uppdaterad för redovisning
 
           
 def checkIfNoneAndStrip(row):
@@ -235,7 +234,6 @@ def check_if_exist_make_new_team(team_name):
         cur.execute("INSERT INTO team (ID, fullName, ownerName, creationDate) VALUES (%s, %s, %s, %s)", val)
       
   return team_name
-  #Nytt inför redovisning
 
         
 
@@ -245,7 +243,7 @@ def insert_teamPlayers():
     players = csv.DictReader(csvPlayers, delimiter = ',')
 
     for player_row in players:
-      checkIfNoneAndStrip(player_row) #Har redan gjorts men ändå
+      checkIfNoneAndStrip(player_row)
       player_id = int(player_row["ID"])
 
       current_teams = split_multivalued_TP(player_row["team"])
@@ -329,12 +327,12 @@ if __name__ == "__main__":
   try:
     conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='test')
     cur = conn.cursor()
-    create_tables("C:/xampp/htdocs/729G28/projektB/projB_g10_schema.sql")
+    # create_tables("C:/xampp/htdocs/729G28/projektB/projB_g10_schema.sql")
 
-    insert_teams()
-    insert_coaches()
-    insert_players()
-    insert_teamPlayers()
+    # insert_teams()
+    # insert_coaches()
+    # insert_players()
+    # insert_teamPlayers()
 
     sql_query()
     #Close the database connection

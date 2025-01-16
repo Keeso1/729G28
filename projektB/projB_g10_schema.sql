@@ -11,9 +11,9 @@ DROP TABLE IF EXISTS user CASCADE;
 
 CREATE TABLE user (
     userName nvarchar(255),
-    email nvarchar(255),
     CONSTRAINT userName PRIMARY KEY (userName),
-    userPassword VARCHAR(255)
+    email nvarchar(255),
+    userPassword nvarchar(255)
 ) ENGINE=InnoDB;
 
 CREATE TABLE team (

@@ -26,9 +26,9 @@
 	    <div class="container xs-8">
 		
 			<form action="signup.php" method="post">
-				<label>Name*<input type="text" name="name"></label><br>
-				<label>Email*<input type="text" name="email"></label><br>
-				<label>Password*<input type="password" name="password"></label><br>
+				<label>Name:<input type="text" name="name"></label><br>
+				<label>Email:<input type="text" name="email"></label><br>
+				<label>Password:<input type="password" name="password"></label><br>
 				<input type="submit" name="submit" value="Sign up">
 			</form>
 		<?php
@@ -37,7 +37,7 @@
 				$name = trim($_POST['name']);
 				$email = trim($_POST['email']);
 				$password = trim($_POST['password']);
-				$errors = [];
+				$errors = array();
 
 				if (empty($name)) {
 					$errors[] = "Name is required.";

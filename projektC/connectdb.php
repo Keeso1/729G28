@@ -173,6 +173,7 @@ function get_player_info($conn, $playerID){
 	$player_AP_array["debute"] = $player_team_array["debute"];
 	$player_AP_array["present"] = $player_team_array["present"];
 	$player_AP_array["previous"] = $player_team_array["previous"];
+	console_log($player_AP_array);
 	return $player_AP_array; //DONE
 }// end function get_player_info
 
@@ -192,7 +193,43 @@ function get_coach_info($conn, $coachID){
 
 //------------------------------------------------------------------------------------
 //Funktioner för del D
+function log_in($conn, $userInfo){
+	$name = $userInfo['name'];
+	$email = $userInfo['email'];
+	$password = $userInfo['password'];
 
+	// Step 1: Check for unique username (name) only
+	$stmt = $conn->prepare("SELECT * FROM user WHERE userName = ?");
+	$stmt->bind_param("s", $name); // Do this on every other prepared statement
+	$stmt->execute();
+	$result = $stmt->get_result();
+
+	console_log($result->num_rows);
+	if ($result->num_rows > 0) {
+		$result = $result->fetch_assoc();
+		// Username already exists
+		if ($result["email"] == $email And password_verify($password, $result["userPassword"])){
+			session_start();
+			$_SESSION["userName"] = $name;
+			return [
+				'success' => true,
+				'message' => 'You are logged in as '. $_SESSION["userName"] //SESSION är startad och $_SESSION["userName"] är satt
+			];
+		} else{
+			return [
+				'success' => false,
+				'message' => 'Incorrect Email or Password'
+			];
+		}
+	} else {
+		return [
+			'success' => false,
+			'message' => 'A user with this username does not exists'
+		];
+
+	}
+		
+}
 function add_user($conn, $userInfo) {
 	//add a user into the database. Assume data is validated but check for unique name and email.
 	//return something that means the user was added or not.
@@ -202,10 +239,11 @@ function add_user($conn, $userInfo) {
 
     // Step 1: Check for unique username (name) only
     $stmt = $conn->prepare("SELECT * FROM user WHERE userName = ?");
-    $stmt->bind_param("s", $name);
+    $stmt->bind_param("s", $name); // Do this on every other prepared statement
     $stmt->execute();
     $result = $stmt->get_result();
 
+	console_log($result->num_rows);
     if ($result->num_rows > 0) {
         // Username already exists
         return [
@@ -223,7 +261,7 @@ function add_user($conn, $userInfo) {
         // Successfully added the user
         return [
             'success' => true,
-            'message' => 'User successfully added.'
+            'message' => "<p style='color: green;'> User successfully added.</p>"
         ];
     } else {
         // Failed to add the user

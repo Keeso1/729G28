@@ -176,7 +176,6 @@ function get_player_info($conn, $playerID){
 	$player_AP_array["debute"] = $player_team_array["debute"];
 	$player_AP_array["present"] = $player_team_array["present"];
 	$player_AP_array["previous"] = $player_team_array["previous"];
-	console_log($player_AP_array);
 	return $player_AP_array; //DONE
 }// end function get_player_info
 
@@ -202,7 +201,6 @@ if (isset($_GET['logout'])) {
 	// Destroy the session when logout is requested
 	session_unset(); // clears all session variables
 	session_destroy(); // Destroys the session
-	console_log("session_killed");
 }
 
 
@@ -221,10 +219,7 @@ function log_in($conn, $userInfo){
 		$result = $result->fetch_assoc();
 		// Username exists
 		if ($result["email"] == $email And password_verify($password, $result["userPassword"])){
-			console_log("session variabel ska sättas");
-			console_log($_SESSION);
 			$_SESSION['userName'] = $_POST["name"];
-			console_log($_SESSION);
 			return "<p style='color: green;'>You are logged in as: " . $_SESSION['userName'] . "</p>"; //Login Success message, SESSION is started and $_SESSION["userName"] is set
 		} else{
 			return "<p style='color: red;'>Incorrect Email or Password</p>"; //Login failure
@@ -248,7 +243,6 @@ function add_user($conn, $userInfo) {
     $stmt->execute();
     $result = $stmt->get_result();
 
-	console_log($result->num_rows);
     if ($result->num_rows > 0) {
         // Username already exists
         return "<p style='color: red;'>User or email already exists.</p>";
@@ -283,9 +277,7 @@ function add_player($conn, $team, $playerInfo, $user) {
     $stmt->execute();
     $result = $stmt->get_result()->fetch_column();
 
-	console_log($result);
 	$new_id = $result + 1;
-	console_log($new_id);
 
     $stmt = $conn->prepare("INSERT INTO player (ID, fullName, draftYear, birthDate, birthPlace, _weight, height, info, userName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("isissddss", $new_id, $name, $draftYear, $birthdate, $birthplace, $weight, $length, $information, $user);
@@ -317,5 +309,4 @@ function update_player($conn, $playerInfo) {
         return "<p style='color: green;'> Player successfully Updated.</p>"; // Update success
     }
 }//end function update player
-
 ?>
